@@ -72,6 +72,7 @@ func Spider_xl()(infoList []proxy.IPInfo ){
 				IP:     htmlquery.FindOneText(n, "//td[1]"),
 				Port:   htmlquery.FindOneText(n, "//td[2]"),
 				IPType: switchIPType(htmlquery.FindOneText(n, "//td[4]")),
+				Rating: 50,
 			}
 			infoList = append(infoList, info)
 		}
