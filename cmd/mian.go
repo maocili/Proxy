@@ -26,7 +26,8 @@ func work() []proxy.IPInfo {
 
 func main() {
 	//test2.M()
-	p := proxy.NewPool(time.Second * 3)
+	p := proxy.NewPool(time.Second * 10)
+	p.StartVerify()
 	s := proxy.NewSpider(time.Second*15, spiderProject.Spider_xl)
 	s.Start(p)
 
