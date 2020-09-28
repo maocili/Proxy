@@ -100,7 +100,8 @@ func (p *ProxyPool) GetList() (data []string) {
 	defer p.m.Unlock()
 	ipIter := reflect.ValueOf(p.ips).MapRange()
 	for ipIter.Next() {
-		data = append(data, ipIter.Key().String())
+		info := p.ips[ProxyIP(ipIter.Key().String())]
+		data = append(data, fmt.Sprintf("ip: %s |rating: %d",info,info.Rating))
 	}
 	return data
 
