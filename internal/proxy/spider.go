@@ -1,6 +1,7 @@
 package proxy
 
 import (
+	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -30,7 +31,7 @@ func (s *SpiderWorker) Start(pool *ProxyPool) {
 		for {
 			select {
 			case <-s.Ticker:
-				q := NewMQ(64)
+				q := NewInsertQueue(64,insertIP)
 				go q.Consumer(q.ch, pool)
 				list := s.Work()
 				//生成者
@@ -41,4 +42,15 @@ func (s *SpiderWorker) Start(pool *ProxyPool) {
 
 		}
 	}()
+}
+
+
+// 队列Consumer func :插入ip
+func insertIP(i <-chan IPInfo, pool *ProxyPool) {
+	for ipinfo := range i {
+		info := ipinfo
+		ip := fmt.Sprint(info)
+		pool.Append(ProxyIP(ip), info)
+	}
+
 }
