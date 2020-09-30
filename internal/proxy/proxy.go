@@ -48,9 +48,9 @@ func (p *ProxyPool) Append(ip ProxyIP, info IPInfo) {
 	p.m.Lock()
 
 	if _, isexist := p.ips[ip]; isexist {
+		// TODO: 存在时？
 		p.m.Unlock()
-
-		p.Alter(ip, info)
+		//p.Alter(ip, info)
 		return
 	}
 	p.ips[ip] = info
@@ -101,7 +101,7 @@ func (p *ProxyPool) GetList() (data []string) {
 	ipIter := reflect.ValueOf(p.ips).MapRange()
 	for ipIter.Next() {
 		info := p.ips[ProxyIP(ipIter.Key().String())]
-		data = append(data, fmt.Sprintf("ip: %s |rating: %d",info,info.Rating))
+		data = append(data, fmt.Sprintf("ip: %s |rating: %d", info, info.Rating))
 	}
 	return data
 
