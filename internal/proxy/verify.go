@@ -16,7 +16,7 @@ func (pool *ProxyPool) StartVerify() {
 			select {
 			case <-pool.ticker:
 				log.Println("Running Verify")
-				q := NewInsertQueue(64, ratingIP)
+				q := NewInsertQueue(64, consumerRatingIP)
 				go q.Consumer(q.ch, pool)
 				pool.VerifyLoop(q)
 			}
@@ -24,11 +24,15 @@ func (pool *ProxyPool) StartVerify() {
 	}()
 }
 
-func ratingIP(i <-chan IPInfo, pool *ProxyPool) {
+func consumerRatingIP(i <-chan IPInfo, pool *ProxyPool) {
 	for ipinfo := range i {
 		info := ipinfo
-		ip := fmt.Sprint(info)
-		go pool.Alter(ProxyIP(ip), info)
+		ip := ProxyIP(fmt.Sprint(info))
+		if info.Rating <= 0 {
+			go pool.Delete(ip) //TODO:防止源地址提供重复的ip
+		} else {
+			go pool.Alter(ip, info)
+		}
 	}
 }
 
@@ -41,16 +45,25 @@ func (pool *ProxyPool) VerifyLoop(q *Queue) {
 	for it.Next() {
 		pool.m.Lock()
 		wg.Add(1)
-		go verifyIP(&wg, q, pool.ips[ProxyIP(it.Key().String())])
+		go func(wg *sync.WaitGroup, queue *Queue, info IPInfo) {
+
+			defer wg.Done()
+
+			if verifyIP(info) {
+				info.Rating += 10
+			} else {
+				info.Rating -= 30
+			}
+			q.ch <- info
+
+		}(&wg, q, pool.ips[ProxyIP(it.Key().String())])
 		pool.m.Unlock()
 	}
 	wg.Wait()
+
 }
 
-func verifyIP(wg *sync.WaitGroup, q *Queue, info IPInfo) {
-	defer wg.Done()
-	//fmt.Println("verifyIP:", info)
-
+func verifyIP(info IPInfo) bool {
 	proxy := func(_ *http.Request) (*url.URL, error) {
 		return url.Parse(info.String())
 	}
@@ -60,13 +73,13 @@ func verifyIP(wg *sync.WaitGroup, q *Queue, info IPInfo) {
 	client := &http.Client{Transport: transport}
 	resp, err := client.Get("http://116.62.125.79/get")
 	if err != nil {
-		return
+		return false
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		info.Rating -= 30
-		q.ch <- info
+		return false
+	} else {
+		return true
 	}
-
 }
