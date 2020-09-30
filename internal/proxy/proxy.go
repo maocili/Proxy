@@ -80,28 +80,30 @@ func (p *ProxyPool) Delete(ip ProxyIP) {
 
 //返回一个ip
 func (p *ProxyPool) RandIP() string {
-	p.m.Lock()
-	it := reflect.ValueOf(p.ips).MapRange()
-	if it.Next() {
-		fmt.Println(it.Next(), it.Key())
-		defer p.Delete(ProxyIP(it.Key().String())) //Fix BUG: randip时导致阻塞
-		defer p.m.Unlock()                         //解锁需要在Delete操作之后执行,否则会导致阻塞
 
-		return it.Key().String()
-	}
+	p.m.Lock()
 	defer p.m.Unlock()
+
+	for ip, info := range p.ips {
+		if info.Rating >= 50 {
+			return string(ip)
+		}
+	}
 	return ""
 
 }
 
 //获取所有的代理ip
-func (p *ProxyPool) GetList() (data []string) {
+func (p *ProxyPool) GetList() (data []IPInfo) {
 	p.m.Lock()
 	defer p.m.Unlock()
 	ipIter := reflect.ValueOf(p.ips).MapRange()
 	for ipIter.Next() {
 		info := p.ips[ProxyIP(ipIter.Key().String())]
-		data = append(data, fmt.Sprintf("ip: %s |rating: %d", info, info.Rating))
+		//data = append(data, fmt.Sprintf("ip: %s |rating: %d", info, info.Rating))
+		info.IP = info.String()
+		data = append(data, info)
+
 	}
 	return data
 
