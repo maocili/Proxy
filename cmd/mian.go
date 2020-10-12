@@ -26,10 +26,13 @@ func work() []proxy.IPInfo {
 
 func main() {
 	//test2.M()
-	p := proxy.NewPool(time.Second * 10)
+
+	p := proxy.NewPool(time.Second * 30)
 	p.StartVerify()
-	s := proxy.NewSpider(time.Second*15, spiderProject.Spider_xl)
+	s := proxy.NewSpider(time.Second*60, spiderProject.Spider_kuaidaili)
 	s.Start(p)
+	nimadaili := proxy.NewSpider(time.Second*30, spiderProject.Spider_nimadaili)
+	nimadaili.Start(p)
 
 	api.StartWebServe(p,":8080")
 	defer func() { select {} }()
