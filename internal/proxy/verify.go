@@ -29,7 +29,7 @@ func consumerRatingIP(i <-chan IPInfo, pool *ProxyPool) {
 		info := ipinfo
 		ip := ProxyIP(fmt.Sprint(info))
 		if info.Rating <= 0 {
-			go pool.Delete(ip) //TODO:防止源地址提供重复的ip
+			go pool.Delete(ip) //防止源地址提供重复的ip
 		} else {
 			go pool.Alter(ip, info)
 		}
@@ -71,15 +71,31 @@ func verifyIP(info IPInfo) bool {
 	transport := &http.Transport{Proxy: proxy}
 
 	client := &http.Client{Transport: transport}
-	resp, err := client.Get("http://116.62.125.79/get")
-	if err != nil {
-		return false
-	}
-	defer resp.Body.Close()
+	if info.IPType == HTTP {
+		resp, err := client.Get("http://116.62.125.79/get")
+		if err != nil {
+			return false
+		}
+		defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		return false
-	} else {
-		return true
+		if resp.StatusCode != 200 {
+			return false
+		} else {
+			return true
+		}
+	} else if info.IPType == HTTPS {
+		resp, err := client.Get("https://httpbin.org/get")
+		if err != nil {
+			return false
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != 200 {
+			return false
+		} else {
+			return true
+		}
 	}
+	return false
+
 }
