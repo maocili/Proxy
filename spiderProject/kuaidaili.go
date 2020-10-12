@@ -10,16 +10,7 @@ import (
 	"time"
 )
 
-func switchIPType(t string) int {
-	switch t {
-	case "HTTP":
-		return proxy.HTTP
-	case "HTTPS":
-		return proxy.HTTPS
-	default:
-		return 0
-	}
-}
+
 
 func MyRecover()  {
 	if r := recover(); r != nil {
@@ -27,12 +18,12 @@ func MyRecover()  {
 	}
 }
 
-func Spider_xl()(infoList []proxy.IPInfo ){
-	log.Println("Running Spider_xl")
+func Spider_kuaidaili()(infoList []proxy.IPInfo ){
+	log.Println("Running Spider_kuaidaili")
 	defer MyRecover()
 
 	client := &http.Client{}
-	for i := 1; i <3 ; i++ {
+	for i := 1; i <5 ; i++ {
 		url := fmt.Sprintf("https://www.kuaidaili.com/free/inha/%d",i)
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
