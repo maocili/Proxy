@@ -85,7 +85,7 @@ func (p *ProxyPool) RandIP() string {
 	defer p.m.Unlock()
 
 	for ip, info := range p.ips {
-		if info.Rating >= 50 {
+		if info.Rating >= 60 {
 			return string(ip)
 		}
 	}
