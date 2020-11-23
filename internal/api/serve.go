@@ -1,28 +1,27 @@
 package api
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"io"
-	"log"
-	"net"
-	"net/url"
+	"net/http"
 	"proxy/internal/proxy"
-	"strings"
-	"time"
 )
 
 var pool *proxy.ProxyPool
 
 func StartWebServe(p *proxy.ProxyPool, addr string) {
 	pool = p
-	go Proxy()
 	router := gin.Default()
 	router.GET("/list", GetList)
 	router.GET("/rand", RandIP)
+	router.POST("/add", AddIP)
+	router.GET("/sub",Sub)
 	router.Run(addr)
 
+}
+
+func Sub(context *gin.Context) {
+	pool.RandIP()
 }
 
 func GetList(context *gin.Context) {
@@ -43,94 +42,22 @@ func RandIP(c *gin.Context) {
 
 }
 
-func Proxy() {
-	log.Println("http proxy service running port :10088")
-	l, err := net.Listen("tcp", ":10088")
-	if err != nil {
-		log.Panic(err)
-	}
+func AddIP(context *gin.Context) {
 
-	for {
-		conn, err := l.Accept()
-		if err != nil {
-			log.Panic(err)
-		}
-		go handleClientRequest(conn)
-	}
-}
-func handleClientRequest(conn net.Conn) {
-	if conn == nil {
-		return
-	}
-	defer conn.Close()
+	var ipinfo proxy.IPInfo
 
-	var b [1024]byte
-	n, err := conn.Read(b[:])
-	if err != nil {
-		log.Println(err)
+	if err := context.ShouldBindJSON(&ipinfo); err != nil {
+		context.Abort()
+		fmt.Println(err.Error())
 		return
 	}
 
-	fmt.Println(string(b[:]))
+	ipinfo.Rating = 50
+	pool.Append(proxy.ProxyIP(ipinfo.String()), ipinfo)
 
-	var method, host, address string
-	fmt.Sscanf(string(b[:bytes.IndexByte(b[:], '\n')]), "%s%s", &method, &host)
-	hostPortURL, err := url.Parse(host)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	if hostPortURL.Opaque == "443" { //https访问
-		address = hostPortURL.Scheme + ":443"
-	} else {                                            //http访问
-		if strings.Index(hostPortURL.Host, ":") == -1 { //host不带端口， 默认80
-			address = hostPortURL.Host + ":80"
-		} else {
-			address = hostPortURL.Host
-		}
-	}
-
-	//获得了请求的host和port，就开始拨号吧
-	server, err := Dial()
-	fmt.Println(address)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	defer server.Close()
-
-	log.Println("server tcp tunnel connection:", server.LocalAddr().String(), "->", server.RemoteAddr().String())
-	// server.SetDeadline(time.Now().Add(time.Duration(10) * time.Second))
-
-	if method == "CONNECT" {
-		fmt.Fprint(conn, "HTTP/1.1 200 Connection established\r\n\r\n")
-	} else {
-		log.Println("server write", method) //其它协议
-		server.Write(b[:n])
-	}
-
-	go func() {
-		io.Copy(server, conn)
-	}()
-	io.Copy(conn, server) //阻塞转发
-
+	context.JSON(http.StatusOK, gin.H{
+		"msg": "succuess",
+	})
+	context.Abort()
 }
 
-//直接转发代理
-func Dial() (net.Conn, error) {
-	var proxyAddr string
-	proxyAddr = pool.RandIP()
-
-	c, err := func() (net.Conn, error) {
-		u, _ := url.Parse(proxyAddr)
-		log.Println("代理host", u.Host)
-		// Dial and create client connection.
-		c, err := net.DialTimeout("tcp", u.Host, time.Second*5)
-		if err != nil {
-			log.Println(err)
-			return nil, err
-		}
-		return c, err
-	}()
-	return c, err
-}
