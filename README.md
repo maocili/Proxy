@@ -39,8 +39,10 @@ go build cmd
 
 ## TODO 
 
--[ ] 支持动态代理https、socket
+- [x] 支持动态代理http、https
 
--[ ] 更丰富的IP属性
+- [ ] 支持动态代理socket
 
--[ ] 在randIP 时可以分类获取IP 
+- [ ] 更丰富的IP属性
+
+- [ ] 在randIP 时可以分类获取IP 
