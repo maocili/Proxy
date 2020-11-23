@@ -138,3 +138,7 @@ func (i IPInfo) String() string {
 	}
 	return fmt.Sprintf("%d://%s:%s", i.IPType, i.IP, i.Port)
 }
+
+func (info IPInfo) Host() string{
+	return info.IP+":"+info.Port
+}
