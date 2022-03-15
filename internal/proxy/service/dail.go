@@ -1,63 +1,16 @@
-package api
+package service
 
 import (
 	"bytes"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"io"
 	"log"
 	"net"
 	"net/url"
-	"proxy/internal/proxy"
 	"strings"
 	"time"
 )
 
-var pool *proxy.ProxyPool
-
-func StartWebServe(p *proxy.ProxyPool, addr string) {
-	pool = p
-	go Proxy()
-	router := gin.Default()
-	router.GET("/list", GetList)
-	router.GET("/rand", RandIP)
-	router.Run(addr)
-
-}
-
-func GetList(context *gin.Context) {
-
-	context.JSON(200, gin.H{
-		"ip": pool.GetList(),
-	})
-	context.Abort()
-
-}
-
-func RandIP(c *gin.Context) {
-
-	c.JSON(200, gin.H{
-		"ip": pool.RandIP(),
-	})
-	c.Abort()
-
-}
-
-func Proxy() {
-	log.Println("http proxy service running port :10088")
-	l, err := net.Listen("tcp", ":10088")
-	if err != nil {
-		log.Panic(err)
-	}
-
-	for {
-		conn, err := l.Accept()
-		if err != nil {
-			log.Panic(err)
-		}
-		go handleClientRequest(conn)
-	}
-}
 func handleClientRequest(conn net.Conn) {
 	if conn == nil {
 		return
@@ -82,7 +35,7 @@ func handleClientRequest(conn net.Conn) {
 	}
 	if hostPortURL.Opaque == "443" { //https访问
 		address = hostPortURL.Scheme + ":443"
-	} else {                                            //http访问
+	} else { //http访问
 		if strings.Index(hostPortURL.Host, ":") == -1 { //host不带端口， 默认80
 			address = hostPortURL.Host + ":80"
 		} else {

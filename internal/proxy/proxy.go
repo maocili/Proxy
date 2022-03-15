@@ -95,8 +95,8 @@ func (p *ProxyPool) RandIP() string {
 
 //获取所有的代理ip
 func (p *ProxyPool) GetList() (data []IPInfo) {
-	p.m.Lock()
-	defer p.m.Unlock()
+	p.m.RLock()
+	defer p.m.RUnlock()
 	ipIter := reflect.ValueOf(p.ips).MapRange()
 	for ipIter.Next() {
 		info := p.ips[ProxyIP(ipIter.Key().String())]

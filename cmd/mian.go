@@ -1,8 +1,9 @@
 package main
 
 import (
-	"proxy/internal/api"
+	"proxy/internal/http"
 	"proxy/internal/proxy"
+	"proxy/internal/proxy/service"
 	"proxy/spiderProject"
 	"time"
 )
@@ -25,7 +26,6 @@ func work() []proxy.IPInfo {
 }
 
 func main() {
-	//test2.M()
 
 	p := proxy.NewPool(time.Second * 30)
 	p.StartVerify()
@@ -34,7 +34,8 @@ func main() {
 	nimadaili := proxy.NewSpider(time.Second*30, spiderProject.Spider_nimadaili)
 	nimadaili.Start(p)
 
-	api.StartWebServe(p,":8080")
+	go service.Proxy(p)
+	http.StartWebServe(":8080")
 	defer func() { select {} }()
 
 }
