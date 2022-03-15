@@ -26,15 +26,23 @@ go build cmd
 - /rand 随机抽取一个ip（默认等级>=60）
 
 ## 目录介绍
-###/cmd 主程序入口
-###/internal 程序内部包
-###/pkg 第三方包封装
-###/spiderProject 公开代理爬虫
+- /cmd 主程序入口
+
+- /internal 程序内部包
+
+- /pkg 第三方包封装
+
+- /spiderProject 公开代理爬虫
 
 ## ip等级机制
 ```初始等级50，定时校验，失败-30，成功+10。上不封顶，等级小于等于0时删除IP。``` 
 
 ## TODO 
--[ ] 支持动态代理https、socket
--[ ] 更丰富的IP属性
--[ ] 在randIP 时可以分类获取IP 
+
+- [x] 支持动态代理http、https
+
+- [ ] 支持动态代理socket
+
+- [ ] 更丰富的IP属性
+
+- [ ] 在randIP 时可以分类获取IP 
