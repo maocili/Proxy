@@ -34,8 +34,10 @@ func main() {
 	nimadaili := proxy.NewSpider(time.Second*30, spiderProject.Spider_nimadaili)
 	nimadaili.Start(p)
 
+	yun := proxy.NewSpider(time.Second*60, spiderProject.Spider_yun)
+	yun.Start(p)
+
 	go service.Proxy(p)
 	http.StartWebServe(":8080")
 	defer func() { select {} }()
-
 }

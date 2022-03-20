@@ -31,22 +31,25 @@ func (s *SpiderWorker) Start(pool *ProxyPool) {
 		for {
 			select {
 			case <-s.Ticker:
-				q := NewInsertQueue(64,insertIP)
+				q := NewInsertQueue(64, insertIP)
 				go q.Consumer(q.ch, pool)
 				list := s.Work()
 				//生成者
 				for _, info := range list {
 					ipInfo := info
 					q.ch <- ipInfo
-				}}
+				}
+				close(q.ch)
+			}
 
 		}
 	}()
 }
 
-
 // 队列Consumer func :插入ip
 func insertIP(i <-chan IPInfo, pool *ProxyPool) {
+
+	fmt.Println(&i)
 	for ipinfo := range i {
 		info := ipinfo
 		ip := fmt.Sprint(info)

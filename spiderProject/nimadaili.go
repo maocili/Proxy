@@ -13,6 +13,10 @@ func switchIPType(t string) int {
 	switch t {
 	case "HTTP代理":
 		return proxy.HTTP
+	case "HTTP":
+		return proxy.HTTP
+	case "HTTPS":
+		return proxy.HTTPS
 	case "HTTPS代理":
 		return proxy.HTTPS
 	default:

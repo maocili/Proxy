@@ -72,7 +72,7 @@ func verifyIP(info IPInfo) bool {
 
 	client := &http.Client{Transport: transport}
 	if info.IPType == HTTP {
-		resp, err := client.Get("http://httpbin.org/get")
+		resp, err := client.Get("http://150.158.176.85:5555/get")
 		if err != nil {
 			return false
 		}
@@ -84,7 +84,7 @@ func verifyIP(info IPInfo) bool {
 			return true
 		}
 	} else if info.IPType == HTTPS {
-		resp, err := client.Get("https://httpbin.org/get")
+		resp, err := client.Get("http://150.158.176.85:5555/get")
 		if err != nil {
 			return false
 		}

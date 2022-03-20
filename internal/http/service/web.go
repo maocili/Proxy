@@ -29,6 +29,7 @@ func RandIP(c *gin.Context) {
 func AppendIP(c *gin.Context) {
 
 	var ipinfo IPInfo
+
 	if err := c.ShouldBindJSON(&ipinfo); err != nil {
 		c.JSON(304, gin.H{
 			"AppendIP err": err.Error(),
@@ -54,7 +55,7 @@ func AppendIP(c *gin.Context) {
 
 func DeleteIP(c *gin.Context) {
 	var ipinfo IPInfo
-	if err := c.ShouldBindJSON(&ipinfo); err != nil {
+	if err := c.BindHeader(&ipinfo); err != nil {
 		c.JSON(304, gin.H{
 			"DeleteIP err": err.Error(),
 		})

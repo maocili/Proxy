@@ -1,0 +1,137 @@
+/* 初始化 */
+*{
+    margin: 0;
+    padding: 0%;
+    box-sizing: border-box;
+}
+
+body{
+    font: 16px/1.5 "Helvetice Nenu",helvetica,Arial,"Microsoft Yahei","Hiragino Sans GB","Heiti SC","wenQuanYi Micro Hei",sans-serif;
+    /* background-color: #92dcee;s */
+    justify-content: center;
+    align-items: center;
+
+}
+
+ul,ol{
+    list-style: none;
+}
+
+a{
+    text-decoration:none;
+    color:#333
+}
+
+img{
+    vertical-align: middle;
+}
+
+input{
+    border: none;
+    outline: none;
+    color: #333;
+}
+
+.clearfix::before,.clearfix::after{
+    content: "";
+    display: table;
+}
+.clearfix::after{
+    clear: both;
+}
+
+
+
+
+
+.header{
+
+    width: 100%;
+    height: 65px;
+    background: #3176d9;
+}
+
+.header-icon{
+    float: left;
+    margin-left: 32px;
+    width: 30px;
+    height: 30px;
+
+}
+
+.header-icon img{
+    margin-top: 20px;
+    width: 100%;
+    height: 100%;
+}
+
+.header-word{
+    margin-left: 25px;
+    float: left;
+    height: 65px;
+
+}
+
+.header-word p {
+    color: #fff;
+    font-size: 30px;
+    line-height: 64px;
+}
+
+.nav{
+    width: 320px;
+    height: 800px;
+    overflow-y: auto;
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+.one{
+    margin-left: 30px;
+    margin-top: 20px;
+    height: 38px;
+    width: 250px;
+    border-bottom: 2px #3176d9 solid;
+}
+
+.one p{
+    font-size: 25px;
+    color: #3176d9;
+    font-weight: 800;
+    line-height: 35px;
+}
+
+.two{
+    margin-left: 30px;
+    margin-top: 20px;
+    height: 38px;
+    width: 250px;
+}
+
+.two-top a{
+    margin: 18px;
+}
+
+.two-top p{
+    font-size: 25px;
+    line-height: 35px;
+}
+
+.two-shili p{
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.three{
+    margin-left: 40px;
+}
+
+.three p{
+    color: rgb(143, 137, 137);
+    font-size: 25px;
+    line-height: 35px;
+}
+
+p:hover{
+    color: #3176d9;
+}
